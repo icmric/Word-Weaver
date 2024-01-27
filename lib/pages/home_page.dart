@@ -50,10 +50,10 @@ class HomePageState extends State<HomePage> {
                           text: TextSpan(
                             children: [
                               ...selectedWords[i].sublist(1).map((item) => TextSpan(
-                                    text: selectedWords[i].sublist(1).isNotEmpty ? ' $item -->' : ' $item',
+                                    text: selectedWords[i].sublist(1).isNotEmpty ? ' $item --> ' : ' $item',
                                   )),
                               TextSpan(
-                                text: ' "${selectedWords[i][0]}"',
+                                text: selectedWords[i][0],
                                 style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ],
@@ -61,7 +61,7 @@ class HomePageState extends State<HomePage> {
                         ), // shows the full path and options for the selected word
                       if (i != selectedWordIndex)
                         Text(
-                          '"${selectedWords[i][0]}"',
+                          selectedWords[i][0],
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ), // shows only the final word for all other words
                     ],
