@@ -16,7 +16,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
-    List<String> Headings = ["People", "Places", "Things"];
+    List<String> Headings = ["People", "Activities", "Places", "Time", "Feelings", "Objects"];
     List<List<String>> selectedWords = [
       ["Word1", "Sub1", "Sub 2"],
       ["Word2", "Sub1", "Sub 2"],
@@ -69,29 +69,34 @@ class HomePageState extends State<HomePage> {
                 ),
             ],
           ),
-          Row(
-            children: Headings.map((name) => createTile(title: name, deviceWidth: deviceWidth, deviceHeight: deviceHeight)).toList(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Wrap(
+                direction: Axis.horizontal, // this will ensure wrapping in row direction
+                children: Headings.map((name) => createTile(title: name, deviceWidth: deviceWidth, deviceHeight: deviceHeight)).toList(),
+              ),
+            ),
           ),
-          Row(
-            children: Headings.map((name) => createTile(title: name, deviceWidth: deviceWidth, deviceHeight: deviceHeight)).toList(),
-          )
         ],
       ),
     );
   }
 
   Widget createTile({required String title, required double deviceWidth, required double deviceHeight}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        border: Border.all(width: 1),
-      ),
-      width: deviceWidth / 3,
-      height: deviceHeight / 5,
-      child: Center(
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 20),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          border: Border.all(width: 1),
+        ),
+        width: 150,
+        height: 200,
+        child: Center(
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 20),
+          ),
         ),
       ),
     );
