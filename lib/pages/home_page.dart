@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:text_to_speech/text_to_speech.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -115,6 +116,20 @@ class HomePageState extends State<HomePage> {
                                       deleteLastWordInPath();
                                     },
                                   ),
+                                if (selectedWords.isNotEmpty)
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.volume_up_sharp,
+                                      size: 20,
+                                    ),
+                                    onPressed: () {
+                                      List<String> wordsToSpeak = [];
+                                      for (i = 0; i < selectedWords.length; i++) {
+                                        wordsToSpeak.add(selectedWords[i].last);
+                                      }
+                                      textToSpeechFunction(wordsToSpeak.toString());
+                                    },
+                                  ),
                               ],
                             ),
                           ),
@@ -156,6 +171,9 @@ class HomePageState extends State<HomePage> {
             }
           });
         },
+        onDoubleTap: () {
+          textToSpeechFunction(title);
+        },
         child: Container(
           decoration: BoxDecoration(
             color: Colors.blue,
@@ -172,6 +190,11 @@ class HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  textToSpeechFunction(String text) {
+    TextToSpeech tts = TextToSpeech();
+    tts.speak(text);
   }
 
   void addToWordPath({required String wordToAdd}) {
