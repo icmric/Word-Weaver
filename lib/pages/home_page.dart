@@ -116,25 +116,25 @@ class HomePageState extends State<HomePage> {
                                       deleteLastWordInPath();
                                     },
                                   ),
-                                if (selectedWords.isNotEmpty)
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.volume_up_sharp,
-                                      size: 20,
-                                    ),
-                                    onPressed: () {
-                                      List<String> wordsToSpeak = [];
-                                      for (i = 0; i < selectedWords.length; i++) {
-                                        wordsToSpeak.add(selectedWords[i].last);
-                                      }
-                                      textToSpeechFunction(wordsToSpeak.toString());
-                                    },
-                                  ),
                               ],
                             ),
                           ),
                         ),
                       ),
+                  if (selectedWords.isNotEmpty)
+                    IconButton(
+                      icon: const Icon(
+                        Icons.volume_up_sharp,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        List<String> wordsToSpeak = [];
+                        for (int i = 0; i < selectedWords.length; i++) {
+                          wordsToSpeak.add(selectedWords[i].last);
+                        }
+                        textToSpeechFunction(wordsToSpeak.toString());
+                      },
+                    ),
                 ],
               ),
             ),
