@@ -1,9 +1,23 @@
+import 'dart:developer';
+
+import 'package:communication_assistant/pages/voice_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
-  final String title;
+  Map<String, dynamic> voiceOptions;
+  final String title = "Communication Assistant";
+
+  HomePage({
+    Key? key,
+    this.voiceOptions = const {
+      "volume": 1,
+      "rate": 1,
+      "pitch": 1,
+      "language": "en-US",
+      "voice": "en-US",
+    },
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -12,6 +26,8 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  TextToSpeech tts = TextToSpeech();
+  late Map<String, dynamic> voiceOptions;
   int selectedWordIndex = -1;
   List<List<String>> selectedWords = [];
   List<String> currentOptions = [];
@@ -34,6 +50,10 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     currentOptions = options.keys.toList();
+    voiceOptions = widget.voiceOptions;
+    tts.setVolume(voiceOptions['volume']);
+    tts.setRate(voiceOptions['rate']);
+    tts.setLanguage(voiceOptions['voice']);
   }
 
   @override
@@ -43,9 +63,37 @@ class HomePageState extends State<HomePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: Center(child: Text(widget.title)),
       ),
+      drawer: Drawer(
+          child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            child: Text(
+              'Settings',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          ListTile(
+            title: const Text('Voice Settings'),
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VoiceSettingsPage(options: voiceOptions)));
+            },
+          ),
+          ListTile(
+            title: Text('About'),
+            onTap: () {},
+          ),
+        ],
+      )),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -193,7 +241,6 @@ class HomePageState extends State<HomePage> {
   }
 
   textToSpeechFunction(String text) {
-    TextToSpeech tts = TextToSpeech();
     tts.speak(text);
   }
 

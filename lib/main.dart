@@ -15,10 +15,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
-      home: const HomePage(title: 'Communication Assistant'),
+      home: HomePage(),
     );
   }
 }
-
-
