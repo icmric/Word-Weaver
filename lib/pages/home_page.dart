@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:communication_assistant/data/import_data_csv.dart';
 import 'package:communication_assistant/pages/voice_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:text_to_speech/text_to_speech.dart';
@@ -7,7 +8,7 @@ import 'package:text_to_speech/text_to_speech.dart';
 class HomePage extends StatefulWidget {
   Map<String, dynamic> voiceOptions;
   final String title = "Communication Assistant";
-
+  Map<String, List<Map<String, String>>>? options;
   HomePage({
     Key? key,
     this.voiceOptions = const {
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
       "language": "en-US",
       "voice": "en-US",
     },
+    this.options,
   }) : super(key: key);
 
   @override
@@ -31,25 +33,20 @@ class HomePageState extends State<HomePage> {
   int selectedWordIndex = -1;
   List<List<String>> selectedWords = [];
   List<String> currentOptions = [];
+  List<String> startingOptions = [];
   List<dynamic> mapStack = [];
-  Map<String, dynamic> options = {
-    "People": {
-      "Family": ["Mom", "Dad", "Brother", "Sister"],
-      "Friends": ["Friend1", "Friend2", "Friend3"],
-      "Teachers": ["Teacher1", "Teacher2", "Teacher3"],
-      "Classmates": ["Classmate1", "Classmate2", "Classmate3"],
-    },
-    "Activities": ["Activity1", "Activity2", "Activity3"],
-    "Places": ["Place1", "Place2", "Place3"],
-    "Time": ["Time1", "Time2", "Time3"],
-    "Feelings": ["Feeling1", "Feeling2", "Feeling3"],
-    "Objects": ["Object1", "Object2", "Object3"],
-  };
+  late Map<String, List<Map<String, String>>> options;
+  late double optionsWidth;
+  late double deviceHeight;
+  late double optionsBoxWidth;
+  late double optionsBoxHeight;
 
   @override
   void initState() {
     super.initState();
-    currentOptions = options.keys.toList();
+    options = widget.options!;
+    currentOptions = options.values.first.map((e) => e.values.first.toString()).toList();
+    startingOptions = currentOptions;
     voiceOptions = widget.voiceOptions;
     tts.setVolume(voiceOptions['volume']);
     tts.setRate(voiceOptions['rate']);
@@ -61,6 +58,14 @@ class HomePageState extends State<HomePage> {
     if (selectedWordIndex == -1 && selectedWords.isNotEmpty) {
       selectedWordIndex = selectedWords.length - 1;
     }
+    optionsWidth = MediaQuery.of(context).size.width;
+    deviceHeight = MediaQuery.of(context).size.height;
+    if (optionsWidth > 800) {
+      optionsWidth = 800;
+    }
+    optionsBoxWidth = optionsWidth * 0.35;
+    optionsBoxHeight = deviceHeight * 0.3;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -95,106 +100,109 @@ class HomePageState extends State<HomePage> {
         ],
       )),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              reverse: true,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  for (int i = 0; i < selectedWords.length; i++)
-                    if (selectedWords[i].isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedWordIndex = i;
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: i == selectedWordIndex ? Colors.blue : Colors.grey,
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              children: [
-                                if (i == selectedWordIndex && selectedWords[i].last != "")
-                                  RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        ...selectedWords[i].sublist(0, selectedWords[i].length - 1).map(
-                                              (item) => TextSpan(
-                                                text: selectedWords[i].sublist(0, selectedWords[i].length - 1).isNotEmpty ? '$item --> ' : ' $item',
+        child: SizedBox(
+          width: optionsWidth,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                reverse: true,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    for (int i = 0; i < selectedWords.length; i++)
+                      if (selectedWords[i].isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedWordIndex = i;
+                              });
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: i == selectedWordIndex ? Colors.blue : Colors.grey,
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.all(8),
+                              child: Row(
+                                children: [
+                                  if (i == selectedWordIndex && selectedWords[i].last != "")
+                                    RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          ...selectedWords[i].sublist(0, selectedWords[i].length - 1).map(
+                                                (item) => TextSpan(
+                                                  text: selectedWords[i].sublist(0, selectedWords[i].length - 1).isNotEmpty ? '$item --> ' : ' $item',
+                                                ),
                                               ),
-                                            ),
-                                        TextSpan(
-                                          text: selectedWords[i].last,
-                                          style: const TextStyle(fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
+                                          TextSpan(
+                                            text: selectedWords[i].last,
+                                            style: const TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ), // shows the full path and options for the selected word
+                                  if (i != selectedWordIndex)
+                                    Text(
+                                      selectedWords[i].last,
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                    ), // shows only the final word for all other words
+                                  if (i == selectedWords.length - 1 && selectedWordIndex == selectedWords.length - 1 && selectedWords[i].last != "")
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.check,
+                                        size: 20,
+                                      ),
+                                      onPressed: () {
+                                        confirmWordInWordPath();
+                                      },
                                     ),
-                                  ), // shows the full path and options for the selected word
-                                if (i != selectedWordIndex)
-                                  Text(
-                                    selectedWords[i].last,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ), // shows only the final word for all other words
-                                if (i == selectedWords.length - 1 && selectedWordIndex == selectedWords.length - 1 && selectedWords[i].last != "")
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.check,
-                                      size: 20,
+                                  if (i == selectedWords.length - 1 && selectedWordIndex == selectedWords.length - 1 && selectedWords[i].last == "")
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.backspace,
+                                        size: 20,
+                                      ),
+                                      onPressed: () {
+                                        deleteLastWordInPath();
+                                      },
                                     ),
-                                    onPressed: () {
-                                      confirmWordInWordPath();
-                                    },
-                                  ),
-                                if (i == selectedWords.length - 1 && selectedWordIndex == selectedWords.length - 1 && selectedWords[i].last == "")
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.backspace,
-                                      size: 20,
-                                    ),
-                                    onPressed: () {
-                                      deleteLastWordInPath();
-                                    },
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
+                    if (selectedWords.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(
+                          Icons.volume_up_sharp,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          List<String> wordsToSpeak = [];
+                          for (int i = 0; i < selectedWords.length; i++) {
+                            wordsToSpeak.add(selectedWords[i].last);
+                          }
+                          textToSpeechFunction(wordsToSpeak.toString());
+                        },
                       ),
-                  if (selectedWords.isNotEmpty)
-                    IconButton(
-                      icon: const Icon(
-                        Icons.volume_up_sharp,
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        List<String> wordsToSpeak = [];
-                        for (int i = 0; i < selectedWords.length; i++) {
-                          wordsToSpeak.add(selectedWords[i].last);
-                        }
-                        textToSpeechFunction(wordsToSpeak.toString());
-                      },
-                    ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Wrap(
-                  direction: Axis.horizontal, // this will ensure wrapping in row direction
-                  children: currentOptions.map((key) => createTile(title: key)).toList(),
+                  ],
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Wrap(
+                    direction: Axis.horizontal, // this will ensure wrapping in row direction
+                    children: currentOptions.map((e) => createTile(title: e)).toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -210,11 +218,11 @@ class HomePageState extends State<HomePage> {
           selectedWordIndex = selectedWords.length - 1;
           addToWordPath(wordToAdd: title);
           setState(() {
-            if (options[title] is List<String>) {
-              currentOptions = options[title];
-            } else if (options[title] is Map<String, dynamic>) {
+            if (options[title] is List<Map<String, String>>) {
+              currentOptions = options[title]!.map((e) => e.values.first.toString()).toList();
+            } else if (options[title] is Map<String, List<Map<String, String>>>) {
               mapStack.add(options); // push the current map to the stack
-              options = options[title]; // update the options map with the new map
+              //options = options[title];
               currentOptions = options.keys.toList();
             }
           });
@@ -227,8 +235,8 @@ class HomePageState extends State<HomePage> {
             color: Colors.blue,
             border: Border.all(width: 1),
           ),
-          width: 150,
-          height: 200,
+          width: optionsBoxWidth,
+          height: optionsBoxHeight,
           child: Center(
             child: Text(
               title,
@@ -270,7 +278,7 @@ class HomePageState extends State<HomePage> {
       while (mapStack.isNotEmpty) {
         options = mapStack.removeLast();
       }
-      currentOptions = options.keys.toList(); // reset currentOptions to the keys of the original options map
+      currentOptions = startingOptions; // reset currentOptions to the keys of the original options map
     });
   }
 }
