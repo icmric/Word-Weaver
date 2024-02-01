@@ -9,6 +9,7 @@ class HomePage extends StatefulWidget {
   Map<String, dynamic> voiceOptions;
   final String title = "Communication Assistant";
   Map<String, List<Map<String, String>>>? options;
+  List<List<String>>? selectedWords;
   HomePage({
     Key? key,
     this.voiceOptions = const {
@@ -19,6 +20,7 @@ class HomePage extends StatefulWidget {
       "voice": "en-US",
     },
     this.options,
+    this.selectedWords,
   }) : super(key: key);
 
   @override
@@ -55,6 +57,10 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.selectedWords != null) {
+      selectedWords = widget.selectedWords!;
+    }
+
     if (selectedWordIndex == -1 && selectedWords.isNotEmpty) {
       selectedWordIndex = selectedWords.length - 1;
     }
@@ -90,7 +96,7 @@ class HomePageState extends State<HomePage> {
           ListTile(
             title: const Text('Voice Settings'),
             onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VoiceSettingsPage(options: voiceOptions)));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VoiceSettingsPage(options: voiceOptions, wordOptions: options, selectedWords: selectedWords)));
             },
           ),
           ListTile(

@@ -6,8 +6,11 @@ import 'package:text_to_speech/text_to_speech.dart';
 
 class VoiceSettingsPage extends StatefulWidget {
   final Map<String, dynamic>? options;
+  // NOTE this is a dodgy fix, it preserves the words when moving between screens, would be better to save to a database insted
+  final Map<String, List<Map<String, String>>> wordOptions;
+  final List<List<String>> selectedWords;
 
-  const VoiceSettingsPage({Key? key, this.options}) : super(key: key);
+  const VoiceSettingsPage({Key? key, this.options, required this.wordOptions, required this.selectedWords}) : super(key: key);
 
   @override
   _VoiceSettingsPageState createState() => _VoiceSettingsPageState();
@@ -47,6 +50,8 @@ class _VoiceSettingsPageState extends State<VoiceSettingsPage> {
               MaterialPageRoute(
                 builder: (BuildContext context) => HomePage(
                   voiceOptions: {'volume': volumeValue, 'rate': rateValue, 'voice': selectedvoice},
+                  options: widget.wordOptions,
+                  selectedWords: widget.selectedWords,
                 ),
               ),
             );
