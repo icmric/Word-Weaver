@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:communication_assistant/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:text_to_speech/text_to_speech.dart';
@@ -21,7 +19,7 @@ class _VoiceSettingsPageState extends State<VoiceSettingsPage> {
   double rateValue = 0.5;
   String selectedvoice = 'en-US';
 
-  List<String> _voices = [
+  final List<String> _voices = [
     'en-AU',
     'en-US',
     'en-GB',
@@ -148,7 +146,7 @@ class _VoiceSettingsPageState extends State<VoiceSettingsPage> {
                   volumeValue = 1;
                   setState(() {});
                 },
-                child: Text("Reset"))
+                child: const Text("Reset"))
           ],
         ),
       ),

@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         future: loadData(),
         builder: (BuildContext context, AsyncSnapshot<CSVDataLoader> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator()); // Loading screen
+            return const Center(child: CircularProgressIndicator()); // Loading screen
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}'); // Error screen
           } else {

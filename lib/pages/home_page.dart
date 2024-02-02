@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:communication_assistant/data/import_data_csv.dart';
 import 'package:communication_assistant/pages/voice_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:text_to_speech/text_to_speech.dart';
@@ -76,7 +73,7 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.grey.shade900,
         title: Center(
             child: Text(
@@ -116,8 +113,7 @@ class HomePageState extends State<HomePage> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-                  var value = navigateNestedMap(options, navigationKeys);
-                  print(value);
+
                 },
               ),
             ],
@@ -227,15 +223,11 @@ class HomePageState extends State<HomePage> {
   }
 
   dynamic navigateNestedMap(dynamic options, List<List<String>> keys) {
-    print("navigatedNestMap");
-
     List currectKeys = keys.last; // create a copy of keys
 
     //if the start of the list
     if (currectKeys.isEmpty) {
-      print("navigatedNestMap 1");
       if (options is Map) {
-        print("navigatedNestMap 2");
         return options["A"];
       } else {
         return options;
@@ -264,10 +256,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget createTiles() {
-    print("CreateTile");
     var items = navigateNestedMap(options, navigationKeys);
-    print(navigationKeys);
-    print(items);
     return Expanded(
       child: SingleChildScrollView(
         child: Wrap(
