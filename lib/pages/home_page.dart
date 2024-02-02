@@ -100,7 +100,7 @@ class HomePageState extends State<HomePage> {
               ),
               ListTile(
                 title: const Text(
-                  'Voice Settings',
+                  'Settings',
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
@@ -112,9 +112,7 @@ class HomePageState extends State<HomePage> {
                   'About',
                   style: TextStyle(color: Colors.white),
                 ),
-                onTap: () {
-
-                },
+                onTap: () {},
               ),
             ],
           )),

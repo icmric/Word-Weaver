@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   text_to_speech: ^0.2.3
   csv: ^5.1.1
+  dio: ^5.4.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

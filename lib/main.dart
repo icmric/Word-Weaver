@@ -1,6 +1,7 @@
 import 'package:communication_assistant/data/import_data_csv.dart';
 import 'package:communication_assistant/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
