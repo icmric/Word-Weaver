@@ -42,8 +42,11 @@ class _VoiceSettingsPageState extends State<VoiceSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.grey.shade900,
         leading: IconButton(
+          color: Colors.white,
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -58,31 +61,46 @@ class _VoiceSettingsPageState extends State<VoiceSettingsPage> {
           },
           icon: const Icon(Icons.arrow_back),
         ),
-        title: const Text('Voice Settings'),
+        title: const Text(
+          'Voice Settings',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               'Volume',
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             Slider(
               value: volumeValue,
               min: 0.0,
               max: 2.0,
               onChanged: (newValue) {
-                setState(() {
-                  volumeValue = newValue;
-                });
+                setState(
+                  () {
+                    volumeValue = newValue;
+                  },
+                );
               },
             ),
             const SizedBox(height: 16.0),
             const Text(
               'Rate',
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             Slider(
               value: rateValue,
@@ -96,22 +114,32 @@ class _VoiceSettingsPageState extends State<VoiceSettingsPage> {
             ),
             const SizedBox(height: 16.0),
             const Text(
-              'voice',
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              'Voice',
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             DropdownButton<String>(
+              dropdownColor: Colors.grey.shade900,
               value: selectedvoice,
               onChanged: (newValue) {
                 setState(() {
                   selectedvoice = newValue!;
                 });
               },
-              items: _voices.map((voice) {
-                return DropdownMenuItem<String>(
-                  value: voice,
-                  child: Text(voice),
-                );
-              }).toList(),
+              items: _voices.map(
+                (voice) {
+                  return DropdownMenuItem<String>(
+                    value: voice,
+                    child: Text(
+                      voice,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  );
+                },
+              ).toList(),
             ),
             TextButton(
                 onPressed: () {

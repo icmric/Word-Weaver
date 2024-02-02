@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
       "rate": 1,
       "pitch": 1,
       "language": "en-US",
-      "voice": "en-US",
+      "voice": "en-AU",
     },
     this.options,
     this.selectedWords,
@@ -42,6 +42,7 @@ class HomePageState extends State<HomePage> {
   late double deviceHeight;
   late double optionsBoxWidth;
   late double optionsBoxHeight;
+  List<List<String>> navigationKeys = [[]];
 
   @override
   void initState() {
@@ -73,38 +74,54 @@ class HomePageState extends State<HomePage> {
     optionsBoxHeight = deviceHeight * 0.3;
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Center(child: Text(widget.title)),
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Colors.grey.shade900,
+        title: Center(
+            child: Text(
+          widget.title,
+          style: const TextStyle(color: Colors.white),
+        )),
       ),
       drawer: Drawer(
+          backgroundColor: Colors.black,
           child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            child: Text(
-              'Settings',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontSize: 24,
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade900,
+                ),
+                child: const Text(
+                  'Settings',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
               ),
-            ),
-          ),
-          ListTile(
-            title: const Text('Voice Settings'),
-            onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VoiceSettingsPage(options: voiceOptions, wordOptions: options, selectedWords: selectedWords)));
-            },
-          ),
-          ListTile(
-            title: Text('About'),
-            onTap: () {},
-          ),
-        ],
-      )),
+              ListTile(
+                title: const Text(
+                  'Voice Settings',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VoiceSettingsPage(options: voiceOptions, wordOptions: options, selectedWords: selectedWords)));
+                },
+              ),
+              ListTile(
+                title: const Text(
+                  'About',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  var value = navigateNestedMap(options, navigationKeys);
+                  print(value);
+                },
+              ),
+            ],
+          )),
       body: Center(
         child: SizedBox(
           width: optionsWidth,
@@ -133,7 +150,7 @@ class HomePageState extends State<HomePage> {
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              padding: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0),
                               child: Row(
                                 children: [
                                   if (i == selectedWordIndex && selectedWords[i].last != "")
@@ -143,11 +160,12 @@ class HomePageState extends State<HomePage> {
                                           ...selectedWords[i].sublist(0, selectedWords[i].length - 1).map(
                                                 (item) => TextSpan(
                                                   text: selectedWords[i].sublist(0, selectedWords[i].length - 1).isNotEmpty ? '$item --> ' : ' $item',
+                                                  style: const TextStyle(fontSize: 20),
                                                 ),
                                               ),
                                           TextSpan(
                                             text: selectedWords[i].last,
-                                            style: const TextStyle(fontWeight: FontWeight.bold),
+                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                           ),
                                         ],
                                       ),
@@ -155,7 +173,7 @@ class HomePageState extends State<HomePage> {
                                   if (i != selectedWordIndex)
                                     Text(
                                       selectedWords[i].last,
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                     ), // shows only the final word for all other words
                                   if (i == selectedWords.length - 1 && selectedWordIndex == selectedWords.length - 1 && selectedWords[i].last != "")
                                     IconButton(
@@ -187,6 +205,7 @@ class HomePageState extends State<HomePage> {
                         icon: const Icon(
                           Icons.volume_up_sharp,
                           size: 20,
+                          color: Colors.white,
                         ),
                         onPressed: () {
                           List<String> wordsToSpeak = [];
@@ -199,14 +218,7 @@ class HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Wrap(
-                    direction: Axis.horizontal, // this will ensure wrapping in row direction
-                    children: currentOptions.map((e) => createTile(title: e)).toList(),
-                  ),
-                ),
-              ),
+              createTiles(),
             ],
           ),
         ),
@@ -214,42 +226,114 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget createTile({
-    required String title,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GestureDetector(
-        onTap: () {
-          selectedWordIndex = selectedWords.length - 1;
-          addToWordPath(wordToAdd: title);
-          setState(() {
-            if (options[title] is List<Map<String, String>>) {
-              currentOptions = options[title]!.map((e) => e.values.first.toString()).toList();
-            } else if (options[title] is Map<String, List<Map<String, String>>>) {
-              mapStack.add(options); // push the current map to the stack
-              //options = options[title];
-              currentOptions = options.keys.toList();
-            }
-          });
-        },
-        onDoubleTap: () {
-          textToSpeechFunction(title);
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border.all(width: 1),
-          ),
-          width: optionsBoxWidth,
-          height: optionsBoxHeight,
-          child: Center(
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 20),
-            ),
-          ),
-        ),
+  dynamic navigateNestedMap(dynamic options, List<List<String>> keys) {
+    print("navigatedNestMap");
+
+    List currectKeys = keys.last; // create a copy of keys
+
+    //if the start of the list
+    if (currectKeys.isEmpty) {
+      print("navigatedNestMap 1");
+      if (options is Map) {
+        print("navigatedNestMap 2");
+        return options["A"];
+      } else {
+        return options;
+      }
+    }
+
+    //test if options[keys.last] exists
+    if (options[currectKeys.last] != null) {
+      return options[currectKeys.last];
+    } else {
+      return [];
+    }
+  }
+
+  String listOfNextWords(Map options, String key) {
+    String words = "";
+    List childOptions = navigateNestedMap(options, [
+      [key]
+    ]);
+
+    childOptions.forEach((element) {
+      words += element["title"] + " ";
+    });
+
+    return words;
+  }
+
+  Widget createTiles() {
+    print("CreateTile");
+    var items = navigateNestedMap(options, navigationKeys);
+    print(navigationKeys);
+    print(items);
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Wrap(
+            direction: Axis.horizontal, // this will ensure wrapping in row direction
+            children: [
+              for (int i = 0; i < items.length; i++)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      //selectedWordIndex = selectedWords.length - 1;
+                      //print("Tapped Tile");
+                      //print(items[i]["title"]);
+                      addToWordPath(wordToAdd: items[i]["title"]);
+                      navigationKeys.last.add(items[i]["child_key"]);
+
+                      if (listOfNextWords(options, items[i]["child_key"]) == "") {
+                        confirmWordInWordPath();
+                      }
+
+                      setState(() {});
+                    },
+                    onLongPress: () {
+                      textToSpeechFunction(items[i]["title"]);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade900,
+                        border: Border.all(width: 1),
+                      ),
+                      width: optionsBoxWidth,
+                      height: optionsBoxHeight,
+                      child: Column(
+                        children: [
+                          Center(
+                              child: Text(
+                            items[i]["emoji"],
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          )),
+                          const Spacer(),
+                          Center(
+                            child: Text(
+                              items[i]["title"],
+                              style: const TextStyle(
+                                fontSize: 35,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Center(
+                            child: Text(
+                              listOfNextWords(options, items[i]["child_key"]) == "" ? "[END]" : listOfNextWords(options, items[i]["child_key"]),
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+            ]),
       ),
     );
   }
@@ -263,16 +347,22 @@ class HomePageState extends State<HomePage> {
       selectedWords.add([wordToAdd]);
     } else if (selectedWords.last.first == "") {
       selectedWords.last.first = wordToAdd;
-    } else {
+    } else if (selectedWords.last.last != wordToAdd) {
       selectedWords.last.add(wordToAdd);
     }
+
     setState(() {});
   }
 
   void deleteLastWordInPath() {
     selectedWords.removeLast();
     selectedWords.removeLast();
-    selectedWords.add([""]);
+
+    if (selectedWords.isNotEmpty) {
+      // if there are still words left, add a blank word to preserve the delete button, if it is empty make delete button disapear
+      selectedWords.add([""]);
+    }
+
     selectedWordIndex = selectedWords.length - 1;
     setState(() {});
   }
@@ -281,10 +371,8 @@ class HomePageState extends State<HomePage> {
     setState(() {
       selectedWords.add([""]);
       selectedWordIndex = selectedWords.length - 1;
-      while (mapStack.isNotEmpty) {
-        options = mapStack.removeLast();
-      }
       currentOptions = startingOptions; // reset currentOptions to the keys of the original options map
+      navigationKeys.add([]);
     });
   }
 }
