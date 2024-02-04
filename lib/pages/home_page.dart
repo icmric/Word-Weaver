@@ -68,7 +68,7 @@ class HomePageState extends State<HomePage> {
       optionsWidth = 800;
     }
     optionsBoxWidth = optionsWidth * 0.35;
-    optionsBoxHeight = deviceHeight * 0.3;
+    optionsBoxHeight = deviceHeight * 0.28;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -255,69 +255,86 @@ class HomePageState extends State<HomePage> {
 
   Widget createTiles() {
     var items = navigateNestedMap(options, navigationKeys);
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Wrap(
-            direction: Axis.horizontal, // this will ensure wrapping in row direction
-            children: [
-              for (int i = 0; i < items.length; i++)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      addToWordPath(wordToAdd: items[i]["title"]);
-                      navigationKeys.last.add(items[i]["child_key"]);
+    return Center(
+      child: Expanded(
+        child: SingleChildScrollView(
+          child: Wrap(
+              direction: Axis.horizontal, // this will ensure wrapping in row direction
+              children: [
+                for (int i = 0; i < items.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        addToWordPath(wordToAdd: items[i]["title"]);
+                        navigationKeys.last.add(items[i]["child_key"]);
 
-                      if (listOfNextWords(options, items[i]["child_key"]) == "") {
-                        confirmWordInWordPath();
-                      }
+                        if (listOfNextWords(options, items[i]["child_key"]) == "") {
+                          confirmWordInWordPath();
+                        }
 
-                      setState(() {});
-                    },
-                    onLongPress: () {
-                      textToSpeechFunction(items[i]["title"]);
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade900,
-                        border: Border.all(width: 1),
-                      ),
-                      width: optionsBoxWidth,
-                      height: optionsBoxHeight,
-                      child: Column(
-                        children: [
-                          Center(
-                              child: Text(
-                            items[i]["emoji"],
-                            style: const TextStyle(
-                              color: Colors.white,
+                        setState(() {});
+                      },
+                      onLongPress: () {
+                        textToSpeechFunction(items[i]["title"]);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade900,
+                          border: Border.all(width: 1),
+                        ),
+                        width: optionsBoxWidth,
+                        height: optionsBoxHeight,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                              child: Center(
+                                  child: Text(
+                                items[i]["emoji"],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                ),
+                              )),
                             ),
-                          )),
-                          const Spacer(),
-                          Center(
-                            child: Text(
-                              items[i]["title"],
-                              style: const TextStyle(
-                                fontSize: 35,
-                                color: Colors.white,
+                            const Spacer(),
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    items[i]["title"],
+                                    style: const TextStyle(
+                                      fontSize: 35,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                          const Spacer(),
-                          Center(
-                            child: Text(
-                              listOfNextWords(options, items[i]["child_key"]) == "" ? "[END]" : listOfNextWords(options, items[i]["child_key"]),
-                              style: const TextStyle(
-                                color: Colors.white,
+                            const Spacer(),
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: Text(
+                                  listOfNextWords(options, items[i]["child_key"]) == "" ? "[END]" : listOfNextWords(options, items[i]["child_key"]),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                )
-            ]),
+                  )
+              ]),
+        ),
       ),
     );
   }
