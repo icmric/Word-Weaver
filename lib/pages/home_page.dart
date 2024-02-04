@@ -265,9 +265,6 @@ class HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                     onTap: () {
-                      //selectedWordIndex = selectedWords.length - 1;
-                      //print("Tapped Tile");
-                      //print(items[i]["title"]);
                       addToWordPath(wordToAdd: items[i]["title"]);
                       navigationKeys.last.add(items[i]["child_key"]);
 
