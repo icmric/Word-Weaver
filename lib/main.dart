@@ -11,6 +11,10 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   Future<CSVDataLoader> loadData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('url') == null) {
+      await prefs.setString('url', "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-6HQ1PfiuXMQehZeOOVjf7ZNqc4a92Yl0uD5Ad-NiskmucLqD2BSZ9EQlZtvOC8SKngyZaL3RcQZD/pub?gid=0&single=true&output=csv");
+    }
     return await CSVDataLoader.create();
   }
 

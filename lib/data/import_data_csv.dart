@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:csv/csv.dart';
 import 'dart:html';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CSVDataLoader {
   late Map<String, List<Map<String, String>>> wordsAsMap;
@@ -16,13 +18,21 @@ class CSVDataLoader {
 
   Future<void> loadData() async {
     if (loadFromLocalStorage().toString() == "{}") {
-      const filePath = 'assets/words.csv';
-      final data = await rootBundle.loadString(filePath);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final dio = Dio();
+      String url = prefs.getString('url') ?? "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-6HQ1PfiuXMQehZeOOVjf7ZNqc4a92Yl0uD5Ad-NiskmucLqD2BSZ9EQlZtvOC8SKngyZaL3RcQZD/pub?gid=0&single=true&output=csv";
+      final rawData = await dio.get(url);
+      final data = rawData.data.toString();
       final fields = const CsvToListConverter().convert(data);
       wordsAsMap = {};
 
       for (var row in fields) {
-        String key = row[0];
+        String key;
+        if (row[0] == 0) {
+          key = "A";
+        } else {
+          key = row[0];
+        }
         String childKey = row[1];
         String title = row[2];
         String emoji = row[3];
