@@ -1,3 +1,4 @@
+import 'package:communication_assistant/data/import_data_csv.dart';
 import 'package:communication_assistant/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:text_to_speech/text_to_speech.dart';
@@ -38,10 +39,15 @@ class _VoiceSettingsPageState extends State<VoiceSettingsPage> {
 
   setPrefrences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? oldURL = prefs.getString('url');
     await prefs.setDouble('volume', volumeValue);
     await prefs.setDouble('rate', rateValue);
     await prefs.setString('voice', selectedvoice);
     await prefs.setString('url', url);
+    if (oldURL != url) {
+      CSVDataLoader loader = await CSVDataLoader.create();
+      loader.loadData(updateData: true);
+    }
   }
 
   getPrefrences() async {

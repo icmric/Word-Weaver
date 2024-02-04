@@ -16,8 +16,8 @@ class CSVDataLoader {
     return loader;
   }
 
-  Future<void> loadData() async {
-    if (loadFromLocalStorage().toString() == "{}") {
+  Future<void> loadData({bool? updateData}) async {
+    if (loadFromLocalStorage().toString() == "{}" || updateData == true) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final dio = Dio();
       String url = prefs.getString('url') ?? "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-6HQ1PfiuXMQehZeOOVjf7ZNqc4a92Yl0uD5Ad-NiskmucLqD2BSZ9EQlZtvOC8SKngyZaL3RcQZD/pub?gid=0&single=true&output=csv";
